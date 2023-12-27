@@ -1,10 +1,12 @@
 package com.example.lp.service;
 
+import com.example.lp.dto.EmployeeDTO;
 import com.example.lp.model.Employee;
 import com.example.lp.repository.EmployeeRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements IEmployeeService {
@@ -14,6 +16,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
         this.employeeRepo = employeeRepo;
     }
 
+    public boolean isEmployeeExists(long employeeCode) {
+        Optional<Employee> employeeOptional = employeeRepo.findById(employeeCode);
+        return employeeOptional.isPresent();
+    }
+
     @Override
     public Employee add(Employee employee) {
         if (employee != null) return employeeRepo.save(employee);
@@ -21,16 +28,20 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public Employee update(long employee_code, Employee employee) {
-        if (employee != null) {
-            Employee e = employeeRepo.getReferenceById(employee_code);
-            e.setName(employee.getName());
-            e.setAge(employee.getAge());
-            e.setBranch_code(employee.getBranch_code());
-            e.setStatus(employee.isStatus());
-            e.setAddress(employee.getAddress());
+    public Employee update(long employeeCode, EmployeeDTO employeeDTO) {
+        if (isEmployeeExists(employeeCode)) {
+            Employee e = employeeRepo.getReferenceById(employeeCode);
+            // Sử dụng constructor để khởi tạo Employee với dữ liệu từ EmployeeDTO
+            Employee updatedEmployee = new Employee(
+                    e.getEmployeeCode(),
+                    employeeDTO.getName(),
+                    employeeDTO.getAge(),
+                    employeeDTO.getBranchCode(),
+                    employeeDTO.isStatus(),
+                    employeeDTO.getAddress()
+            );
 
-            return employeeRepo.save(e);
+            return employeeRepo.save(updatedEmployee);
         }
         return null;
     }
@@ -66,5 +77,4 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public List<Employee> getEmployeesByBranchAndGroup(String branch_code) {
         return employeeRepo.findBranchCodeAndGroup(branch_code);
     }
-
 }

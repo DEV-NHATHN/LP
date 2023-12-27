@@ -1,5 +1,6 @@
 package com.example.lp.service;
 
+import com.example.lp.dto.EmployeeDTO;
 import com.example.lp.model.Employee;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 public interface IEmployeeService {
 public Employee add(Employee employee);
 
-    public Employee update(long employee_code, Employee employee);
+    public Employee update(long employee_code, EmployeeDTO employeeDTO);
 
     public boolean delete(long employee_code);
 

@@ -1,5 +1,6 @@
 package com.example.lp.controller;
 
+import com.example.lp.dto.EmployeeDTO;
 import com.example.lp.model.Employee;
 import com.example.lp.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class EmployeeController {
     }
 
     @PutMapping("/update/{employee_code}")
-    public Employee update(@PathVariable("employee_code") long employee_code, @RequestBody Employee employee) {
-        return iEmployeeService.update(employee_code, employee);
+    public Employee update(@PathVariable("employee_code") long employee_code, @RequestBody EmployeeDTO employeeDTO) {
+        return iEmployeeService.update(employee_code, employeeDTO);
     }
 
     @DeleteMapping("/delete/{employee_code}")

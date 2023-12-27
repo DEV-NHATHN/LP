@@ -3,11 +3,12 @@ package com.example.lp.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="employee")
+@Table(name = "employee")
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long employee_code;
+    @Column(name = "employee_code")
+    private long employeeCode;
 
     @Column(name = "name")
     private String name;
@@ -16,33 +17,37 @@ public class Employee {
     private int age;
 
     @Column(name = "branch_code")
-    private String branch_code;
+    private String branchCode;
 
     @Column(name = "status")
     private boolean status;
 
-
     @Column(name = "address")
     private String address;
 
+    // Constructors, getters, setters, and other methods...
+
+    // Constructors
     public Employee() {
     }
 
-    public Employee(long employee_code, String name, int age, String branch_code, boolean status, String address) {
-        this.employee_code = employee_code;
+    public Employee(long employeeCode, String name, int age, String branchCode, boolean status, String address) {
+        this.employeeCode = employeeCode;
         this.name = name;
         this.age = age;
-        this.branch_code = branch_code;
+        this.branchCode = branchCode;
         this.status = status;
         this.address = address;
     }
 
-    public long getEmployee_code() {
-        return employee_code;
+    // Getters and setters
+
+    public long getEmployeeCode() {
+        return employeeCode;
     }
 
-    public void setEmployee_code(long employee_code) {
-        this.employee_code = employee_code;
+    public void setEmployeeCode(long employeeCode) {
+        this.employeeCode = employeeCode;
     }
 
     public String getName() {
@@ -61,12 +66,12 @@ public class Employee {
         this.age = age;
     }
 
-    public String getBranch_code() {
-        return branch_code;
+    public String getBranchCode() {
+        return branchCode;
     }
 
-    public void setBranch_code(String branch_code) {
-        this.branch_code = branch_code;
+    public void setBranchCode(String branchCode) {
+        this.branchCode = branchCode;
     }
 
     public boolean isStatus() {
