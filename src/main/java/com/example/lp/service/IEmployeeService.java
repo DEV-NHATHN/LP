@@ -14,4 +14,10 @@ public Employee add(Employee employee);
     public List<Employee> getList();
 
     public Employee getOne(long employee_code);
+
+    public List<Employee> getEmployeesByBranchAndStatus(String branch_code, boolean status);
+
+    public List<Employee> getEmployeesByStatus(boolean status);
+
+    public List<Employee> getEmployeesByBranchAndGroup(String branch_code);
 }
