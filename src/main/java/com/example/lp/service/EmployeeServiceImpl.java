@@ -1,7 +1,7 @@
 package com.example.lp.service;
 
-import com.example.lp.dto.EmployeeDTO;
-import com.example.lp.model.Employee;
+import com.example.lp.entity.Employee;
+import com.example.lp.model.CreateEmployeeRequest;
 import com.example.lp.repository.EmployeeRepo;
 import org.springframework.stereotype.Service;
 
@@ -22,23 +22,32 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public Employee add(Employee employee) {
-        if (employee != null) return employeeRepo.save(employee);
+    public Employee add(CreateEmployeeRequest request) {
+        if (request != null) {
+            Employee employee = new Employee();
+            employee.setName(request.getName());
+            employee.setAge(request.getAge());
+            employee.setBranch_code(request.getBranch_code());
+            employee.setStatus(request.isStatus());
+            employee.setAddress(request.getAddress());
+
+            return employeeRepo.save(employee);
+
+        }
         return null;
     }
 
     @Override
-    public Employee update(long employeeCode, EmployeeDTO employeeDTO) {
+    public Employee update(long employeeCode, CreateEmployeeRequest request) {
         if (isEmployeeExists(employeeCode)) {
-            Employee e = employeeRepo.getReferenceById(employeeCode);
             // Sử dụng constructor để khởi tạo Employee với dữ liệu từ EmployeeDTO
             Employee updatedEmployee = new Employee(
-                    e.getEmployeeCode(),
-                    employeeDTO.getName(),
-                    employeeDTO.getAge(),
-                    employeeDTO.getBranchCode(),
-                    employeeDTO.isStatus(),
-                    employeeDTO.getAddress()
+                    employeeCode,
+                    request.getName(),
+                    request.getAge(),
+                    request.getBranch_code(),
+                    request.isStatus(),
+                    request.getAddress()
             );
 
             return employeeRepo.save(updatedEmployee);
@@ -47,10 +56,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public boolean delete(long employee_code) {
-        Employee employee = employeeRepo.getReferenceById(employee_code);
-        employeeRepo.delete(employee);
-        return true;
+    public boolean delete(long employeeCode) {
+        if (isEmployeeExists(employeeCode)){
+            employeeRepo.deleteById(employeeCode);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -59,13 +70,13 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public Employee getOne(long employee_code) {
-        return employeeRepo.getReferenceById(employee_code);
+    public Employee getOne(long employeeCode) {
+        return employeeRepo.getReferenceById(employeeCode);
     }
 
     @Override
-    public List<Employee> getEmployeesByBranchAndStatus(String branch_code, boolean status) {
-        return employeeRepo.findByBranchCodeAndStatus(branch_code, status);
+    public List<Employee> getEmployeesByBranchAndStatus(String branchCode, boolean status) {
+        return employeeRepo.findByBranchCodeAndStatus(branchCode, status);
     }
 
     @Override
@@ -74,7 +85,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public List<Employee> getEmployeesByBranchAndGroup(String branch_code) {
-        return employeeRepo.findBranchCodeAndGroup(branch_code);
+    public List<Employee> getEmployeesByBranchAndGroup(String branchCode) {
+        return employeeRepo.findBranchCodeAndGroup(branchCode);
     }
 }
