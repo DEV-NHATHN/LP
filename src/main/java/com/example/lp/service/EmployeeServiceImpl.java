@@ -5,8 +5,13 @@ import com.example.lp.model.CreateEmployeeRequest;
 import com.example.lp.model.EmployeeDTO;
 import com.example.lp.model.EmployeeMapper;
 import com.example.lp.repository.EmployeeRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,13 +20,46 @@ import java.util.Optional;
 public class EmployeeServiceImpl implements IEmployeeService {
     private final EmployeeRepo employeeRepo;
 
+    private static final String URL = "jdbc:postgresql://localhost:5432/Ex";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "1234";
+
+    @Autowired
     public EmployeeServiceImpl(EmployeeRepo employeeRepo) {
         this.employeeRepo = employeeRepo;
+    }
+
+    public static Connection getJDBCConnection() {
+        try {
+            return DriverManager.getConnection(URL, USER, PASSWORD);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public boolean isEmployeeExists(long employeeCode) {
         Optional<Employee> employeeOptional = employeeRepo.findById(employeeCode);
         return employeeOptional.isPresent();
+    }
+
+    @Override
+    public void migrate() {
+        Connection connection = getJDBCConnection();
+
+        String sql = "";
+        try {
+            connection.setAutoCommit(false); // Transaction
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.addBatch();
+            preparedStatement.executeBatch();
+            connection.commit(); // Transaction
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -62,7 +100,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Override
     public boolean delete(long employeeCode) {
-        if (isEmployeeExists(employeeCode)){
+        if (isEmployeeExists(employeeCode)) {
             employeeRepo.deleteById(employeeCode);
             return true;
         }
@@ -74,7 +112,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         List<Employee> list = employeeRepo.findAll();
 
         List<EmployeeDTO> result = new ArrayList<>();
-        for(Employee  employee : list) {
+        for (Employee employee : list) {
             result.add(EmployeeMapper.toEmployeeDTO(employee));
         }
         return result;
@@ -91,7 +129,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         List<Employee> list = employeeRepo.findByBranchCodeAndStatus(branchCode, status);
 
         List<EmployeeDTO> result = new ArrayList<>();
-        for(Employee  employee : list) {
+        for (Employee employee : list) {
             result.add(EmployeeMapper.toEmployeeDTO(employee));
         }
         return result;
@@ -102,7 +140,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         List<Employee> list = employeeRepo.findByStatus(status);
 
         List<EmployeeDTO> result = new ArrayList<>();
-        for(Employee  employee : list) {
+        for (Employee employee : list) {
             result.add(EmployeeMapper.toEmployeeDTO(employee));
         }
         return result;
@@ -113,7 +151,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         List<Employee> list = employeeRepo.findBranchCodeAndGroup(branchCode);
 
         List<EmployeeDTO> result = new ArrayList<>();
-        for(Employee  employee : list) {
+        for (Employee employee : list) {
             result.add(EmployeeMapper.toEmployeeDTO(employee));
         }
         return result;

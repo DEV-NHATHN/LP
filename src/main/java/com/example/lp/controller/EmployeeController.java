@@ -54,6 +54,11 @@ public class EmployeeController {
     @GetMapping("/group")
     public List<EmployeeDTO> group(
             @RequestParam(value = "branch_code", required = false) String branchCode) {
-            return iEmployeeService.getEmployeesByBranchAndGroup(branchCode);
+        return iEmployeeService.getEmployeesByBranchAndGroup(branchCode);
+    }
+
+    @GetMapping("/migrate")
+    public void migrate() {
+        iEmployeeService.migrate();
     }
 }

@@ -22,4 +22,6 @@ public interface IEmployeeService {
     public List<EmployeeDTO> getEmployeesByStatus(boolean status);
 
     public List<EmployeeDTO> getEmployeesByBranchAndGroup(String branchCode);
+
+    void migrate();
 }

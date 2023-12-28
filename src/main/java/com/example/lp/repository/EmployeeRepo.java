@@ -22,5 +22,4 @@ public interface EmployeeRepo extends JpaRepository<Employee, Long> {
             "    (Employee inner join Group_history on Employee.employee_code = Group_history.employee_code)" +
             "where branch_code=:branchCode", nativeQuery = true)
     List<Employee> findBranchCodeAndGroup(String branchCode);
-
 }
