@@ -2,9 +2,12 @@ package com.example.lp.service;
 
 import com.example.lp.entity.Employee;
 import com.example.lp.model.CreateEmployeeRequest;
+import com.example.lp.model.EmployeeDTO;
+import com.example.lp.model.EmployeeMapper;
 import com.example.lp.repository.EmployeeRepo;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +50,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     request.getAge(),
                     request.getBranch_code(),
                     request.isStatus(),
-                    request.getAddress()
+                    request.getAddress(),
+                    request.getSecret_key()
             );
 
             return employeeRepo.save(updatedEmployee);
@@ -65,27 +69,52 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public List<Employee> getList() {
-        return employeeRepo.findAll();
+    public List<EmployeeDTO> getList() {
+        List<Employee> list = employeeRepo.findAll();
+
+        List<EmployeeDTO> result = new ArrayList<>();
+        for(Employee  employee : list) {
+            result.add(EmployeeMapper.toEmployeeDTO(employee));
+        }
+        return result;
     }
 
     @Override
-    public Employee getOne(long employeeCode) {
-        return employeeRepo.getReferenceById(employeeCode);
+    public EmployeeDTO getOne(long employeeCode) {
+        Employee e = employeeRepo.getReferenceById(employeeCode);
+        return EmployeeMapper.toEmployeeDTO(e);
     }
 
     @Override
-    public List<Employee> getEmployeesByBranchAndStatus(String branchCode, boolean status) {
-        return employeeRepo.findByBranchCodeAndStatus(branchCode, status);
+    public List<EmployeeDTO> getEmployeesByBranchAndStatus(String branchCode, boolean status) {
+        List<Employee> list = employeeRepo.findByBranchCodeAndStatus(branchCode, status);
+
+        List<EmployeeDTO> result = new ArrayList<>();
+        for(Employee  employee : list) {
+            result.add(EmployeeMapper.toEmployeeDTO(employee));
+        }
+        return result;
     }
 
     @Override
-    public List<Employee> getEmployeesByStatus(boolean status) {
-        return employeeRepo.findByStatus(status);
+    public List<EmployeeDTO> getEmployeesByStatus(boolean status) {
+        List<Employee> list = employeeRepo.findByStatus(status);
+
+        List<EmployeeDTO> result = new ArrayList<>();
+        for(Employee  employee : list) {
+            result.add(EmployeeMapper.toEmployeeDTO(employee));
+        }
+        return result;
     }
 
     @Override
-    public List<Employee> getEmployeesByBranchAndGroup(String branchCode) {
-        return employeeRepo.findBranchCodeAndGroup(branchCode);
+    public List<EmployeeDTO> getEmployeesByBranchAndGroup(String branchCode) {
+        List<Employee> list = employeeRepo.findBranchCodeAndGroup(branchCode);
+
+        List<EmployeeDTO> result = new ArrayList<>();
+        for(Employee  employee : list) {
+            result.add(EmployeeMapper.toEmployeeDTO(employee));
+        }
+        return result;
     }
 }

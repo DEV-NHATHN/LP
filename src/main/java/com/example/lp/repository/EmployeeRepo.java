@@ -1,6 +1,7 @@
 package com.example.lp.repository;
 
 import com.example.lp.entity.Employee;
+import com.example.lp.model.EmployeeDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

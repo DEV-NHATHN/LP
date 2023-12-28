@@ -7,14 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateEmployeeRequest {
-
+public class EmployeeDTO {
     private String name;
     private int age;
     private String branch_code;
     private boolean status;
     private String address;
-
-    private String secret_key;
-    // Getters and setters
 }

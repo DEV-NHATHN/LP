@@ -30,4 +30,8 @@ public class Employee {
 
     @Column(name = "address")
     private String address;
+
+    @Column(name = "secret_key")
+    private String secret_key;
+    
 }

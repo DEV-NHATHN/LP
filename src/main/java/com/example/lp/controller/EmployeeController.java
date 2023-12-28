@@ -2,6 +2,7 @@ package com.example.lp.controller;
 
 import com.example.lp.entity.Employee;
 import com.example.lp.model.CreateEmployeeRequest;
+import com.example.lp.model.EmployeeDTO;
 import com.example.lp.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/list")
-    public List<Employee> list(
+    public List<EmployeeDTO> list(
             @RequestParam(value = "branch_code", required = false) String branchCode,
             @RequestParam(value = "status", required = false) Boolean status) {
 
@@ -51,7 +52,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/group")
-    public List<Employee> group(
+    public List<EmployeeDTO> group(
             @RequestParam(value = "branch_code", required = false) String branchCode) {
             return iEmployeeService.getEmployeesByBranchAndGroup(branchCode);
     }
