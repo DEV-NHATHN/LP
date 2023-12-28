@@ -1,3 +1,8 @@
+DROP TABLE IF EXISTS Branch cascade ;
+DROP TABLE IF EXISTS Employee CASCADE;
+DROP TABLE IF EXISTS "group" CASCADE;
+DROP TABLE IF EXISTS Group_history CASCADE;
+
 create  table Branch(
 branch_code varchar(50) primary key ,
 branch_name varchar(50) not null
@@ -13,17 +18,18 @@ name varchar(50) not null ,
 age int,
 branch_code varchar(50) references Branch(branch_code) ,
 status bool,
-address varchar(50)
+address varchar(50),
+secret_key varchar(50)
 );
 
-insert into Employee(name, age, branch_code, status, address) values
-('LE VAN MINH', 26, 'TX', true, 'HaNoi'),
-('DO THI BINH', 25, 'TX', false, 'HCM'),
+insert into Employee(name, age, branch_code, status, address, secret_key) values
+('LE VAN MINH', 26, 'TX', true, 'HaNoi', 'secret_1'),
+('DO THI BINH', 25, 'TX', false, 'HCM', 'secret_2'),
 
-('LE THI TAM', 21, 'HM', true, 'HCM'),
-('HOANG THI HIEN', 24, 'HM', false, 'ThaiBinh'),
-('NGUYEN THI LOI', 23, 'HM', true, 'NgheAn'),
-('TRAN THI THAO', 22, 'HM', false, 'NamDinh');
+('LE THI TAM', 21, 'HM', true, 'HCM', 'secret_3'),
+('HOANG THI HIEN', 24, 'HM', false, 'ThaiBinh', 'secret_4'),
+('NGUYEN THI LOI', 23, 'HM', true, 'NgheAn', 'secret_5'),
+('TRAN THI THAO', 22, 'HM', false, 'NamDinh', 'secret_6');
 
 create table "group"(
 group_code varchar(50) primary key ,
