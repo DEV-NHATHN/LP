@@ -18,7 +18,7 @@ public interface EmployeeRepo extends JpaRepository<Employee, Long> {
     @Query(value = "SELECT * FROM Employee e WHERE e.status = :status", nativeQuery = true)
     List<Employee> findByStatus(boolean status);
 
-    @Query(value = "select Employee.employee_code, name, age, branch_code, status, address from" +
+    @Query(value = "select Employee.employee_code, name, age, branch_code, status, address, secret_key from" +
             "    (Employee inner join Group_history on Employee.employee_code = Group_history.employee_code)" +
             "where branch_code=:branchCode", nativeQuery = true)
     List<Employee> findBranchCodeAndGroup(String branchCode);

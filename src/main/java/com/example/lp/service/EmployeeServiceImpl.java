@@ -27,7 +27,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public Employee add(CreateEmployeeRequest request) {
         if (request != null) {
-            Employee employee = new Employee(1,request.getName(), request.getAge(), request.getBranch_code(), request.isStatus(), request.getAddress(), request.getSecret_key());
+            Employee employee = new Employee();
             employee.setName(request.getName());
             employee.setAge(request.getAge());
             employee.setBranch_code(request.getBranch_code());
