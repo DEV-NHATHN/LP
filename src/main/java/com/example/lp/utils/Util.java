@@ -12,4 +12,8 @@ public class Util {
 
         return input.matches(".*\\w.*");
     }
+
+    public static boolean isValidNumber(int input) {
+        return input >= 0;
+    }
 }

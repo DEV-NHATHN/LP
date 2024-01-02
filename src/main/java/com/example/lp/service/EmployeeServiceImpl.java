@@ -56,11 +56,27 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return result;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 30, rollbackFor = BadRequestException.class)
+    @Transactional(
+            isolation = Isolation.READ_COMMITTED,
+            propagation = Propagation.REQUIRED,
+            timeout = 30,
+            rollbackFor = BadRequestException.class)
     @Override
     public Employee add(CreateEmployeeRequest request) throws BadRequestException {
         if (!Util.isValidString(request.getName())) {
             throw new BadRequestException("Name is not valid!");
+        }
+
+        if(!Util.isValidNumber(request.getAge())) {
+            throw new BadRequestException("Age is not valid!");
+        }
+
+        if (!Util.isValidString(request.getBranch_code())) {
+            throw new BadRequestException("Branch code is not valid!");
+        }
+
+        if (!Util.isValidString(request.getAddress())) {
+            throw new BadRequestException("Address code is not valid!");
         }
 
         Employee employee = new Employee();
@@ -72,7 +88,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
         employee.setSecret_key(request.getSecret_key());
 
         return employeeRepository.save(employee);
-
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 30)
