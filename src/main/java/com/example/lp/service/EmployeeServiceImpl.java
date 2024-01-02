@@ -58,16 +58,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Transactional(
             isolation = Isolation.READ_COMMITTED,
-            propagation = Propagation.REQUIRED,
-            timeout = 30,
-            rollbackFor = BadRequestException.class)
+            propagation = Propagation.REQUIRES_NEW,
+            timeout = 30)
     @Override
     public Employee add(CreateEmployeeRequest request) throws BadRequestException {
         if (!Util.isValidString(request.getName())) {
             throw new BadRequestException("Name is not valid!");
         }
 
-        if(!Util.isValidNumber(request.getAge())) {
+        if (!Util.isValidNumber(request.getAge())) {
             throw new BadRequestException("Age is not valid!");
         }
 
@@ -87,7 +86,94 @@ public class EmployeeServiceImpl implements IEmployeeService {
         employee.setAddress(request.getAddress());
         employee.setSecret_key(request.getSecret_key());
 
+        Employee employee2 = new Employee();
+        employee2.setName(request.getName());
+        employee2.setAge(request.getAge());
+        employee2.setBranch_code(request.getBranch_code());
+        employee2.setStatus(request.isStatus());
+        employee2.setAddress(request.getAddress());
+        employee2.setSecret_key(request.getSecret_key());
+
+        Employee employee3 = new Employee();
+        employee3.setName(request.getName());
+        employee3.setAge(request.getAge());
+        employee3.setBranch_code(request.getBranch_code());
+        employee3.setStatus(request.isStatus());
+        employee3.setAddress(request.getAddress());
+        employee3.setSecret_key(request.getSecret_key());
+
+        Employee employee4 = new Employee();
+        employee4.setName(request.getName());
+        employee4.setAge(request.getAge());
+        employee4.setBranch_code(request.getBranch_code());
+        employee4.setStatus(request.isStatus());
+        employee4.setAddress(request.getAddress());
+        employee4.setSecret_key(request.getSecret_key());
+
+        Employee employee5 = new Employee();
+        employee5.setName(request.getName());
+        employee5.setAge(request.getAge());
+        employee5.setBranch_code(request.getBranch_code());
+        employee5.setStatus(request.isStatus());
+        employee5.setAddress(request.getAddress());
+        employee5.setSecret_key(request.getSecret_key());
+
+        saveEmployee1(employee);
+
+        saveEmployee2(employee2);
+
+        saveEmployee3(employee3);
+
+        saveEmployee4(employee4);
+
+        saveEmployee5(employee5);
+
         return employeeRepository.save(employee);
+    }
+
+    @Transactional(
+            isolation = Isolation.READ_COMMITTED,
+            propagation = Propagation.REQUIRES_NEW,
+            timeout = 30,
+            rollbackFor = BadRequestException.class)
+    void saveEmployee1(Employee employee) throws BadRequestException {
+        employeeRepository.save(employee);
+    }
+
+    @Transactional(
+            isolation = Isolation.READ_COMMITTED,
+            propagation = Propagation.REQUIRES_NEW,
+            timeout = 30,
+            rollbackFor = BadRequestException.class)
+    void saveEmployee2(Employee employee) throws BadRequestException {
+        employeeRepository.save(employee);
+    }
+
+    @Transactional(
+            isolation = Isolation.READ_COMMITTED,
+            propagation = Propagation.REQUIRES_NEW,
+            timeout = 30,
+            rollbackFor = BadRequestException.class)
+    void saveEmployee3(Employee employee) throws BadRequestException {
+        employeeRepository.save(employee);
+    }
+
+    @Transactional(
+            isolation = Isolation.READ_COMMITTED,
+            propagation = Propagation.REQUIRES_NEW,
+            timeout = 30,
+            rollbackFor = BadRequestException.class)
+    void saveEmployee4(Employee employee) throws BadRequestException {
+        throw new BadRequestException("Err");
+    }
+
+    @Transactional(
+            isolation = Isolation.READ_COMMITTED,
+            propagation = Propagation.REQUIRES_NEW,
+            timeout = 30,
+            rollbackFor = BadRequestException.class)
+    void saveEmployee5(Employee employee) throws BadRequestException {
+        throw new BadRequestException("Err");
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 30)
