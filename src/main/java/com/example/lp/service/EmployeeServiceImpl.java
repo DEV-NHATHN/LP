@@ -1,11 +1,15 @@
 package com.example.lp.service;
 
+import com.example.lp.IEmployeeSpecifications;
 import com.example.lp.entity.Employee;
 import com.example.lp.model.CreateEmployeeRequest;
 import com.example.lp.model.EmployeeDTO;
-import com.example.lp.model.EmployeeMapper;
-import com.example.lp.repository.EmployeeRepo;
+import com.example.lp.model.ModelMapper;
+import com.example.lp.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -18,15 +22,14 @@ import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements IEmployeeService {
-    private final EmployeeRepo employeeRepo;
-
+    private final EmployeeRepository employeeRepository;
     private static final String URL = "jdbc:postgresql://localhost:5432/Ex";
     private static final String USER = "postgres";
     private static final String PASSWORD = "1234";
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeRepo employeeRepo) {
-        this.employeeRepo = employeeRepo;
+    public EmployeeServiceImpl(EmployeeRepository employeeRepo) {
+        this.employeeRepository = employeeRepo;
     }
 
     public static Connection getJDBCConnection() {
@@ -39,7 +42,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     public boolean isEmployeeExists(long employeeCode) {
-        Optional<Employee> employeeOptional = employeeRepo.findById(employeeCode);
+        Optional<Employee> employeeOptional = employeeRepository.findById(employeeCode);
         return employeeOptional.isPresent();
     }
 
@@ -63,6 +66,27 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
+    public List<EmployeeDTO> getEmployees(String branchCode, Boolean status) {
+        Specification<Employee> spec = Specification.where(null);
+
+        if (branchCode != null) {
+            spec = spec.and(IEmployeeSpecifications.hasBranchCode(branchCode));
+        }
+
+        if (status != null) {
+            spec = spec.and(IEmployeeSpecifications.hasStatus(status));
+        }
+
+        List<Employee> employees = employeeRepository.findAll(spec);
+
+        List<EmployeeDTO> result = new ArrayList<>();
+        for (Employee employee : employees) {
+            result.add(ModelMapper.toEmployeeDTO(employee));
+        }
+        return result;
+    }
+
+    @Override
     public Employee add(CreateEmployeeRequest request) {
         if (request != null) {
             Employee employee = new Employee();
@@ -73,7 +97,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             employee.setAddress(request.getAddress());
             employee.setSecret_key(request.getSecret_key());
 
-            return employeeRepo.save(employee);
+            return employeeRepository.save(employee);
 
         }
         return null;
@@ -93,7 +117,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     request.getSecret_key()
             );
 
-            return employeeRepo.save(updatedEmployee);
+            return employeeRepository.save(updatedEmployee);
         }
         return null;
     }
@@ -101,7 +125,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public boolean delete(long employeeCode) {
         if (isEmployeeExists(employeeCode)) {
-            employeeRepo.deleteById(employeeCode);
+            employeeRepository.deleteById(employeeCode);
             return true;
         }
         return false;
@@ -109,50 +133,50 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Override
     public List<EmployeeDTO> getList() {
-        List<Employee> list = employeeRepo.findAll();
+        List<Employee> list = employeeRepository.findAll();
 
         List<EmployeeDTO> result = new ArrayList<>();
         for (Employee employee : list) {
-            result.add(EmployeeMapper.toEmployeeDTO(employee));
+            result.add(ModelMapper.toEmployeeDTO(employee));
         }
         return result;
     }
 
     @Override
     public EmployeeDTO getOne(long employeeCode) {
-        Employee e = employeeRepo.getReferenceById(employeeCode);
-        return EmployeeMapper.toEmployeeDTO(e);
+        Employee e = employeeRepository.getReferenceById(employeeCode);
+        return ModelMapper.toEmployeeDTO(e);
     }
 
     @Override
     public List<EmployeeDTO> getEmployeesByBranchAndStatus(String branchCode, boolean status) {
-        List<Employee> list = employeeRepo.findByBranchCodeAndStatus(branchCode, status);
+        List<Employee> list = employeeRepository.findByBranchCodeAndStatus(branchCode, status);
 
         List<EmployeeDTO> result = new ArrayList<>();
         for (Employee employee : list) {
-            result.add(EmployeeMapper.toEmployeeDTO(employee));
+            result.add(ModelMapper.toEmployeeDTO(employee));
         }
         return result;
     }
 
     @Override
     public List<EmployeeDTO> getEmployeesByStatus(boolean status) {
-        List<Employee> list = employeeRepo.findByStatus(status);
+        List<Employee> list = employeeRepository.findByStatus(status);
 
         List<EmployeeDTO> result = new ArrayList<>();
         for (Employee employee : list) {
-            result.add(EmployeeMapper.toEmployeeDTO(employee));
+            result.add(ModelMapper.toEmployeeDTO(employee));
         }
         return result;
     }
 
     @Override
     public List<EmployeeDTO> getEmployeesByBranchAndGroup(String branchCode) {
-        List<Employee> list = employeeRepo.findBranchCodeAndGroup(branchCode);
+        List<Employee> list = employeeRepository.findBranchCodeAndGroup(branchCode);
 
         List<EmployeeDTO> result = new ArrayList<>();
         for (Employee employee : list) {
-            result.add(EmployeeMapper.toEmployeeDTO(employee));
+            result.add(ModelMapper.toEmployeeDTO(employee));
         }
         return result;
     }

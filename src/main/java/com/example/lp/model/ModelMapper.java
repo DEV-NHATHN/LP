@@ -2,7 +2,7 @@ package com.example.lp.model;
 
 import com.example.lp.entity.Employee;
 
-public class EmployeeMapper {
+public class ModelMapper {
     public static EmployeeDTO toEmployeeDTO(Employee employee){
         EmployeeDTO tmp = new EmployeeDTO();
         tmp.setEmployee_code(employee.getEmployee_code());
