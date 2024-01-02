@@ -2,43 +2,31 @@ package com.example.lp.service;
 
 import com.example.lp.IEmployeeSpecifications;
 import com.example.lp.entity.Employee;
+import com.example.lp.exception.BadRequestException;
 import com.example.lp.model.CreateEmployeeRequest;
 import com.example.lp.model.EmployeeDTO;
 import com.example.lp.model.ModelMapper;
 import com.example.lp.repository.EmployeeRepository;
+import com.example.lp.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class EmployeeServiceImpl implements IEmployeeService {
     private final EmployeeRepository employeeRepository;
-    private static final String URL = "jdbc:postgresql://localhost:5432/Ex";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "1234";
 
     @Autowired
     public EmployeeServiceImpl(EmployeeRepository employeeRepo) {
         this.employeeRepository = employeeRepo;
-    }
-
-    public static Connection getJDBCConnection() {
-        try {
-            return DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public boolean isEmployeeExists(long employeeCode) {
@@ -47,25 +35,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public void migrate() {
-        Connection connection = getJDBCConnection();
-
-        String sql = "";
-        try {
-            connection.setAutoCommit(false); // Transaction
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.addBatch();
-            preparedStatement.executeBatch();
-            connection.commit(); // Transaction
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 30)
     public List<EmployeeDTO> getEmployees(String branchCode, Boolean status) {
         Specification<Employee> spec = Specification.where(null);
 
@@ -86,27 +56,29 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return result;
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 30, rollbackFor = BadRequestException.class)
     @Override
-    public Employee add(CreateEmployeeRequest request) {
-        if (request != null) {
-            Employee employee = new Employee();
-            employee.setName(request.getName());
-            employee.setAge(request.getAge());
-            employee.setBranch_code(request.getBranch_code());
-            employee.setStatus(request.isStatus());
-            employee.setAddress(request.getAddress());
-            employee.setSecret_key(request.getSecret_key());
-
-            return employeeRepository.save(employee);
-
+    public Employee add(CreateEmployeeRequest request) throws BadRequestException {
+        if (!Util.isValidString(request.getName())) {
+            throw new BadRequestException("Name is not valid!");
         }
-        return null;
+
+        Employee employee = new Employee();
+        employee.setName(request.getName());
+        employee.setAge(request.getAge());
+        employee.setBranch_code(request.getBranch_code());
+        employee.setStatus(request.isStatus());
+        employee.setAddress(request.getAddress());
+        employee.setSecret_key(request.getSecret_key());
+
+        return employeeRepository.save(employee);
+
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 30)
     @Override
     public Employee update(long employeeCode, CreateEmployeeRequest request) {
         if (isEmployeeExists(employeeCode)) {
-            // Sử dụng constructor để khởi tạo Employee với dữ liệu từ EmployeeDTO
             Employee updatedEmployee = new Employee(
                     employeeCode,
                     request.getName(),
@@ -122,6 +94,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return null;
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 30)
     @Override
     public boolean delete(long employeeCode) {
         if (isEmployeeExists(employeeCode)) {
@@ -131,43 +104,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return false;
     }
 
-    @Override
-    public List<EmployeeDTO> getList() {
-        List<Employee> list = employeeRepository.findAll();
-
-        List<EmployeeDTO> result = new ArrayList<>();
-        for (Employee employee : list) {
-            result.add(ModelMapper.toEmployeeDTO(employee));
-        }
-        return result;
-    }
-
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 30)
     @Override
     public EmployeeDTO getOne(long employeeCode) {
         Employee e = employeeRepository.getReferenceById(employeeCode);
         return ModelMapper.toEmployeeDTO(e);
-    }
-
-    @Override
-    public List<EmployeeDTO> getEmployeesByBranchAndStatus(String branchCode, boolean status) {
-        List<Employee> list = employeeRepository.findByBranchCodeAndStatus(branchCode, status);
-
-        List<EmployeeDTO> result = new ArrayList<>();
-        for (Employee employee : list) {
-            result.add(ModelMapper.toEmployeeDTO(employee));
-        }
-        return result;
-    }
-
-    @Override
-    public List<EmployeeDTO> getEmployeesByStatus(boolean status) {
-        List<Employee> list = employeeRepository.findByStatus(status);
-
-        List<EmployeeDTO> result = new ArrayList<>();
-        for (Employee employee : list) {
-            result.add(ModelMapper.toEmployeeDTO(employee));
-        }
-        return result;
     }
 
     @Override

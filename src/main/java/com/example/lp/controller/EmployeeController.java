@@ -1,16 +1,20 @@
 package com.example.lp.controller;
 
 import com.example.lp.entity.Employee;
+import com.example.lp.exception.BadRequestException;
 import com.example.lp.model.CreateEmployeeRequest;
 import com.example.lp.model.EmployeeDTO;
 import com.example.lp.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/employee")
+@EnableTransactionManagement
 public class EmployeeController {
     private final IEmployeeService iEmployeeService;
 
@@ -20,8 +24,12 @@ public class EmployeeController {
     }
 
     @PostMapping("/add")
-    public Employee add(@RequestBody CreateEmployeeRequest request) {
-        return iEmployeeService.add(request);
+    public ResponseEntity<?> add(@RequestBody CreateEmployeeRequest request) {
+        try {
+            return ResponseEntity.ok().body(iEmployeeService.add(request));
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/update/{employee_code}")
@@ -46,10 +54,5 @@ public class EmployeeController {
     public List<EmployeeDTO> group(
             @RequestParam(value = "branch_code", required = false) String branchCode) {
         return iEmployeeService.getEmployeesByBranchAndGroup(branchCode);
-    }
-
-    @GetMapping("/migrate")
-    public void migrate() {
-        iEmployeeService.migrate();
     }
 }
