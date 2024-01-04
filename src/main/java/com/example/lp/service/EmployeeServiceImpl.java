@@ -11,6 +11,7 @@ import com.example.lp.utils.Util;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 
 @Service
@@ -63,26 +61,80 @@ public class EmployeeServiceImpl implements IEmployeeService {
 //        return result;
 //    }
 
-    public List<EmployeeDTO> getEmployees(String branchCode, Boolean status) {
+//    public List<EmployeeDTO> getEmployees(String branchCode, Boolean status) {
+//        StringBuilder queryString = new StringBuilder("SELECT * FROM Employee e WHERE 1=1");
+//
+//        if (branchCode != null) {
+//            queryString.append(" AND e.branch_code = :branchCode");
+//        }
+//
+//        if (status != null) {
+//            queryString.append(" AND e.status = :status");
+//        }
+//
+//        Query query = entityManager.createNativeQuery(queryString.toString(), Employee.class);
+//
+//        if (branchCode != null) {
+//            query.setParameter("branchCode", branchCode);
+//        }
+//
+//        if (status != null) {
+//            query.setParameter("status", status);
+//        }
+//
+//        @SuppressWarnings("unchecked")
+//        List<Employee> employees = query.getResultList();
+//
+//        List<EmployeeDTO> result = new ArrayList<>();
+//        for (Employee employee : employees) {
+//            result.add(ModelMapper.toEmployeeDTO(employee));
+//        }
+//        return result;
+//    }
+
+//    public List<EmployeeDTO> getEmployees(Map<String, String> params) {
+//        List<Employee> employees = employeeRepository.findAll((Specification<Employee>) (root, query, criteriaBuilder) -> {
+//            List<Predicate> predicates = new ArrayList<>();
+//            params.forEach((field, value) -> {
+//                if (value != null) {
+//                    if (value.equals("true") || value.equals("false")) {
+//                        Boolean bool = Boolean.parseBoolean(value);
+//                        predicates.add(criteriaBuilder.equal(root.get(field), bool));
+//                    } else {
+//                        predicates.add(criteriaBuilder.equal(root.get(field), value));
+//                    }
+//                }
+//            });
+//
+//            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+//        });
+//
+//        List<EmployeeDTO> result = new ArrayList<>();
+//
+//        for (Employee employee : employees) {
+//            result.add(ModelMapper.toEmployeeDTO(employee));
+//        }
+//
+//        return result;
+//    }
+
+    public List<EmployeeDTO> getEmployees(Map<String, ?> params) {
         StringBuilder queryString = new StringBuilder("SELECT * FROM Employee e WHERE 1=1");
 
-        if (branchCode != null) {
-            queryString.append(" AND e.branch_code = :branchCode");
-        }
 
-        if (status != null) {
-            queryString.append(" AND e.status = :status");
-        }
+        params.forEach((field, value) -> {
+            if (value != null) {
+                queryString.append(" AND e.").append(field).append(" = :").append(field);
+            }
+        });
 
         Query query = entityManager.createNativeQuery(queryString.toString(), Employee.class);
 
-        if (branchCode != null) {
-            query.setParameter("branchCode", branchCode);
-        }
-
-        if (status != null) {
-            query.setParameter("status", status);
-        }
+        params.forEach((field, value) -> {
+            if (value != null) {
+                    query.setParameter(field, value);
+            }
+        });
 
         @SuppressWarnings("unchecked")
         List<Employee> employees = query.getResultList();
@@ -93,6 +145,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         }
         return result;
     }
+
 
     @Transactional(
             isolation = Isolation.READ_COMMITTED,

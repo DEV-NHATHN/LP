@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/employee")
@@ -43,11 +45,8 @@ public class EmployeeController {
     }
 
     @GetMapping("/list")
-    public List<EmployeeDTO> list(
-            @RequestParam(value = "branch_code", required = false) String branchCode,
-            @RequestParam(value = "status", required = false) Boolean status) {
-
-        return iEmployeeService.getEmployees(branchCode, status);
+    public List<EmployeeDTO> list(@RequestParam Map<String, ?> params) {
+        return iEmployeeService.getEmployees(params);
     }
 
     @GetMapping("/group")
