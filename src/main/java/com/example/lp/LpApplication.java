@@ -19,19 +19,19 @@ public class LpApplication implements CommandLineRunner {
     }
 
     private void generateFakeEmployees(int count){
-        Faker faker = new Faker();
-        for (int i = 0; i < count; i++) {
-            var employee = Employee.builder()
-                    .name(faker.name().fullName())
-                    .age(faker.number().numberBetween(18, 65))
-                    .branch_code(faker.options().option("TX", "HM"))
-                    .status(faker.bool().bool())
-                    .address(faker.address().cityName())
-                    .secret_key(faker.internet().password())
-                    .build();
-            entityManager.persist(employee);
-        }
-        entityManager.flush();
+//        Faker faker = new Faker();
+//        for (int i = 0; i < count; i++) {
+//            var employee = Employee.builder()
+//                    .name(faker.name().fullName())
+//                    .age(faker.number().numberBetween(18, 65))
+//                    .branch_code(faker.options().option("TX", "HM"))
+//                    .status(faker.bool().bool())
+//                    .address(faker.address().cityName())
+//                    .secret_key(faker.internet().password())
+//                    .build();
+//            entityManager.persist(employee);
+//        }
+//        entityManager.flush();
     }
     public static void main(String[] args) {
         SpringApplication.run(LpApplication.class, args);

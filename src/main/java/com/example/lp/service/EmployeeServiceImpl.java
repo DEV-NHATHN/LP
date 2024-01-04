@@ -8,6 +8,9 @@ import com.example.lp.model.EmployeeDTO;
 import com.example.lp.model.ModelMapper;
 import com.example.lp.repository.EmployeeRepository;
 import com.example.lp.utils.Util;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -18,11 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 
 @Service
 public class EmployeeServiceImpl implements IEmployeeService {
     private final EmployeeRepository employeeRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     public EmployeeServiceImpl(EmployeeRepository employeeRepo) {
@@ -36,18 +43,49 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 30)
+//    public List<EmployeeDTO> getEmployees(String branchCode, Boolean status) {
+//        Specification<Employee> spec = Specification.where(null);
+//
+//        if (branchCode != null) {
+//            spec = spec.and(IEmployeeSpecifications.hasBranchCode(branchCode));
+//        }
+//
+//        if (status != null) {
+//            spec = spec.and(IEmployeeSpecifications.hasStatus(status));
+//        }
+//
+//        List<Employee> employees = employeeRepository.findAll(spec);
+//
+//        List<EmployeeDTO> result = new ArrayList<>();
+//        for (Employee employee : employees) {
+//            result.add(ModelMapper.toEmployeeDTO(employee));
+//        }
+//        return result;
+//    }
+
     public List<EmployeeDTO> getEmployees(String branchCode, Boolean status) {
-        Specification<Employee> spec = Specification.where(null);
+        StringBuilder queryString = new StringBuilder("SELECT * FROM Employee e WHERE 1=1");
 
         if (branchCode != null) {
-            spec = spec.and(IEmployeeSpecifications.hasBranchCode(branchCode));
+            queryString.append(" AND e.branch_code = :branchCode");
         }
 
         if (status != null) {
-            spec = spec.and(IEmployeeSpecifications.hasStatus(status));
+            queryString.append(" AND e.status = :status");
         }
 
-        List<Employee> employees = employeeRepository.findAll(spec);
+        Query query = entityManager.createNativeQuery(queryString.toString(), Employee.class);
+
+        if (branchCode != null) {
+            query.setParameter("branchCode", branchCode);
+        }
+
+        if (status != null) {
+            query.setParameter("status", status);
+        }
+
+        @SuppressWarnings("unchecked")
+        List<Employee> employees = query.getResultList();
 
         List<EmployeeDTO> result = new ArrayList<>();
         for (Employee employee : employees) {
@@ -78,54 +116,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
             throw new BadRequestException("Address code is not valid!");
         }
 
-        Employee employee = new Employee();
-        employee.setName(request.getName());
-        employee.setAge(request.getAge());
-        employee.setBranch_code(request.getBranch_code());
-        employee.setStatus(request.isStatus());
-        employee.setAddress(request.getAddress());
-        employee.setSecret_key(request.getSecret_key());
-
-        Employee employee2 = new Employee();
-        employee2.setName(request.getName());
-        employee2.setAge(request.getAge());
-        employee2.setBranch_code(request.getBranch_code());
-        employee2.setStatus(request.isStatus());
-        employee2.setAddress(request.getAddress());
-        employee2.setSecret_key(request.getSecret_key());
-
-        Employee employee3 = new Employee();
-        employee3.setName(request.getName());
-        employee3.setAge(request.getAge());
-        employee3.setBranch_code(request.getBranch_code());
-        employee3.setStatus(request.isStatus());
-        employee3.setAddress(request.getAddress());
-        employee3.setSecret_key(request.getSecret_key());
-
-        Employee employee4 = new Employee();
-        employee4.setName(request.getName());
-        employee4.setAge(request.getAge());
-        employee4.setBranch_code(request.getBranch_code());
-        employee4.setStatus(request.isStatus());
-        employee4.setAddress(request.getAddress());
-        employee4.setSecret_key(request.getSecret_key());
-
-        Employee employee5 = new Employee();
-        employee5.setName(request.getName());
-        employee5.setAge(request.getAge());
-        employee5.setBranch_code(request.getBranch_code());
-        employee5.setStatus(request.isStatus());
-        employee5.setAddress(request.getAddress());
-        employee5.setSecret_key(request.getSecret_key());
+        Employee employee = new Employee(request.getName(), request.getAge(), request.getBranch_code(), request.isStatus(), request.getAddress(), request.getSecret_key());
+        Employee employee2 = new Employee(request.getName(), request.getAge(), request.getBranch_code(), request.isStatus(), request.getAddress(), request.getSecret_key());
+        Employee employee3 = new Employee(request.getName(), request.getAge(), request.getBranch_code(), request.isStatus(), request.getAddress(), request.getSecret_key());
+        Employee employee4 = new Employee(request.getName(), request.getAge(), request.getBranch_code(), request.isStatus(), request.getAddress(), request.getSecret_key());
+        Employee employee5 = new Employee(request.getName(), request.getAge(), request.getBranch_code(), request.isStatus(), request.getAddress(), request.getSecret_key());
 
         saveEmployee1(employee);
-
         saveEmployee2(employee2);
-
         saveEmployee3(employee3);
-
         saveEmployee4(employee4);
-
         saveEmployee5(employee5);
 
         return employeeRepository.save(employee);
@@ -181,7 +181,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public Employee update(long employeeCode, CreateEmployeeRequest request) {
         if (isEmployeeExists(employeeCode)) {
             Employee updatedEmployee = new Employee(
-                    employeeCode,
                     request.getName(),
                     request.getAge(),
                     request.getBranch_code(),
@@ -189,6 +188,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     request.getAddress(),
                     request.getSecret_key()
             );
+            updatedEmployee.setEmployee_code(employeeCode);
 
             return employeeRepository.save(updatedEmployee);
         }

@@ -7,9 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
 @Table(name = "employee")
 public class Employee {
@@ -35,5 +33,13 @@ public class Employee {
 
     @Column(name = "secret_key")
     private String secret_key;
-    
+
+    public Employee(String name, int age, String branch_code, boolean status, String address, String secret_key) {
+        this.name = name;
+        this.age = age;
+        this.branch_code = branch_code;
+        this.status = status;
+        this.address = address;
+        this.secret_key = secret_key;
+    }
 }
