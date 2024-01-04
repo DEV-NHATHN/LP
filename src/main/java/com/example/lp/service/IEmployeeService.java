@@ -19,5 +19,5 @@ public interface IEmployeeService {
 
     List<EmployeeDTO> getEmployeesByBranchAndGroup(String branchCode);
 
-    List<EmployeeDTO> getEmployees(Map<String, ?> params);
+    List<EmployeeDTO> getEmployees(Map<String, Object> params);
 }

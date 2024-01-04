@@ -12,6 +12,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.transaction.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -118,7 +119,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 //        return result;
 //    }
 
-    public List<EmployeeDTO> getEmployees(Map<String, ?> params) {
+    public List<EmployeeDTO> getEmployees(Map<String, Object> params) {
         StringBuilder queryString = new StringBuilder("SELECT * FROM Employee e WHERE 1=1");
 
 
@@ -130,11 +131,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
         Query query = entityManager.createNativeQuery(queryString.toString(), Employee.class);
 
-        params.forEach((field, value) -> {
-            if (value != null) {
-                    query.setParameter(field, value);
+
+        if (!params.isEmpty()) {
+            for (String key : params.keySet()) {
+                query.setParameter(key, params.get(key));
             }
-        });
+        }
 
         @SuppressWarnings("unchecked")
         List<Employee> employees = query.getResultList();

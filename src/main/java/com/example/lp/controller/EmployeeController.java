@@ -45,7 +45,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/list")
-    public List<EmployeeDTO> list(@RequestParam Map<String, ?> params) {
+    public List<EmployeeDTO> list(@RequestParam Map<String, Object> params) {
         return iEmployeeService.getEmployees(params);
     }
 
